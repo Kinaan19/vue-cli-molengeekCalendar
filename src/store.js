@@ -33,7 +33,11 @@ export default new Vuex.Store({
     reservations: [],
     isReservations: false,
     alertState1: false,
-    alertState2: false
+    alertState2: false,
+
+    makeReservState: false,
+    shift1State: false,
+    shift2State: false
   },
   getters: {
     rooms(state) {
@@ -92,6 +96,16 @@ export default new Vuex.Store({
     },
     alertState2(state) {
       return state.alertState2;
+    },
+
+    makeReservState(state) {
+      return state.makeReservState;
+    },
+    shift1State(state) {
+      return state.shift1State;
+    },
+    shift2State(state) {
+      return state.shift2State;
     }
   },
   mutations: {
@@ -184,20 +198,20 @@ export default new Vuex.Store({
       var quarters = 0;
       while(hours < 24) {
         if(hours < 10 && quarters == 0 ) {
-          state.shifts.push({shift: `0${hours}:00`, hour: hours, quarter: quarters});
+          state.shifts.push({shift: `0${hours}:00`, hour: hours, quarter: quarters, selected: false});
           quarters += 15;
         }else if(hours < 10 && quarters != 0) {
-          state.shifts.push({shift: `0${hours}:${quarters}`, hour: hours, quarter: quarters});
+          state.shifts.push({shift: `0${hours}:${quarters}`, hour: hours, quarter: quarters, selected: false});
           quarters += 15;
           if(quarters == 60) {
             hours++;
             quarters = 0;
           }
         }else if(hours >= 10 && quarters == 0) {
-          state.shifts.push({shift: `${hours}:00`, hour: hours, quarter: quarters});
+          state.shifts.push({shift: `${hours}:00`, hour: hours, quarter: quarters, selected: false});
           quarters += 15;
         }else {
-          state.shifts.push({shift: `${hours}:${quarters}`, hour: hours, quarter: quarters});
+          state.shifts.push({shift: `${hours}:${quarters}`, hour: hours, quarter: quarters, selected: false});
           quarters += 15;
           if(quarters == 60) {
             hours++;
@@ -302,6 +316,18 @@ export default new Vuex.Store({
     alertCancel(state) {
       state.alertState1 = false;
       state.alertState2 = false;
+    },
+
+    makeReserv(state, index) {
+      if(state.shift1State == false) {
+        state.shift1State = true;
+        state.shifts[index].selected = true;
+      }else if(state.shift1State == true && state.shift2State == false) {
+        state.shift2State = true;
+        state.shifts[index].selected = true;
+        state.makeReservState = true;
+      }else {
+      }
     }
   },
   actions: {
@@ -354,6 +380,10 @@ export default new Vuex.Store({
     },
     alertCancel(context) {
       context.commit('alertCancel');
+    },
+
+    makeReserv(context, index) {
+      context.commit('makeReserv', index);
     }
   }
 })
