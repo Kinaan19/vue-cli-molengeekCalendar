@@ -14,16 +14,16 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
 #choose {
   box-shadow: inset 0px 20px 70px 5px #ccc;
   background-color: #eee;
   border: 30px solid #fff;
-  height: 80vh;
+  height: 40vh;
 }
 #choose>div {
-  padding: 35vh 0;
+  padding: 15vh 0;
 }
 h4 {
   color: #aaa;

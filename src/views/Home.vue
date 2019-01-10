@@ -1,16 +1,18 @@
 <template>
   <div id="home">
-    <filters class="container"/> 
-    <choose class="container"/>
-    <!-- <vue-scheduler id="scheduler" class="container" v-if="testVS"/> -->
-    <ds-calendar/>
+    <!-- <rooms class="container"/> 
+    <choose class="container"/> -->
+    <month class="container"/>
+    <!-- <dayspan/> -->
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import filters from '@/components/filters.vue'
+// import dayspan from '@/components/dayspan.vue'
+import rooms from '@/components/rooms.vue'
 import choose from '@/components/choose.vue'
+import month from '@/components/month_calendar.vue'
 
 export default {
   name: 'home',
@@ -19,12 +21,14 @@ export default {
     }
   },
   components: {
-    filters,
-    choose
+    rooms,
+    choose,
+    month
+    // dayspan
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>

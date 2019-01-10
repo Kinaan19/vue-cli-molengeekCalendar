@@ -1,13 +1,11 @@
 <template>
   <div id="app">
-    <v-app>
-      <router-view/>
-    </v-app>
+    <router-view/>
   </div>
 </template>
 
-<style>
-@import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+<style lang="scss">
+// @import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 @import '../node_modules/@fortawesome/fontawesome-free/css/all.min.css';
 
 
