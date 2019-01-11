@@ -22,19 +22,7 @@ export default new Vuex.Store({
     weekDays_fr: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
     reservationState: false,
     daySelect: {},
-    shiftState: false,
-    shiftDropDownState1: false,
-    shiftSelect1: {shift: '-- : --', hour: 0, quarter: 0},
-    shiftDropDownState2: false,
-    shiftSelect2: {shift: '-- : --', hour: 0, quarter: 0},
     shifts: [],
-    roomDropDownState: false,
-    roomSelect: 'Les Salles',
-    reservations: [],
-    isReservations: false,
-    alertState1: false,
-    alertState2: false,
-
     makeReservState: false,
     shift1State: false,
     shift2State: false
@@ -61,43 +49,9 @@ export default new Vuex.Store({
     daySelect(state) {
       return state.daySelect;
     },
-    shiftState(state) {
-      return state.shiftState;
-    },
-    shiftDropDownState1(state) {
-      return state.shiftDropDownState1;
-    },
-    shiftSelect1(state) {
-      return state.shiftSelect1.shift;
-    },
-    shiftDropDownState2(state) {
-      return state.shiftDropDownState2;
-    },
-    shiftSelect2(state) {
-      return state.shiftSelect2.shift;
-    },
     shifts(state) {
       return state.shifts;
     },
-    roomDropDownState(state) {
-      return state.roomDropDownState;
-    },
-    roomSelect(state) {
-      return state.roomSelect;
-    },
-    reservations(state) {
-      return state.reservations;
-    },
-    isReservations(state) {
-      return state.isReservations;
-    },
-    alertState1(state) {
-      return state.alertState1;
-    },
-    alertState2(state) {
-      return state.alertState2;
-    },
-
     makeReservState(state) {
       return state.makeReservState;
     },
@@ -193,131 +147,21 @@ export default new Vuex.Store({
       state.shiftDropDownState1 = false;
       state.shiftDropDownState2 = false;
     },
+    scroll() {
+      var myScroll = document.getElementById('test');
+      myScroll.scrollTop = 515;
+    },
     shifts(state) {
       var hours = 0;
-      var quarters = 0;
       while(hours < 24) {
-        if(hours < 10 && quarters == 0 ) {
-          state.shifts.push({shift: `0${hours}:00`, hour: hours, quarter: quarters, selected: false});
-          quarters += 15;
-        }else if(hours < 10 && quarters != 0) {
-          state.shifts.push({shift: `0${hours}:${quarters}`, hour: hours, quarter: quarters, selected: false});
-          quarters += 15;
-          if(quarters == 60) {
-            hours++;
-            quarters = 0;
-          }
-        }else if(hours >= 10 && quarters == 0) {
-          state.shifts.push({shift: `${hours}:00`, hour: hours, quarter: quarters, selected: false});
-          quarters += 15;
+        if(hours < 10) {
+          state.shifts.push({shift: `0${hours}:00`, hour: hours, selected: false});
         }else {
-          state.shifts.push({shift: `${hours}:${quarters}`, hour: hours, quarter: quarters, selected: false});
-          quarters += 15;
-          if(quarters == 60) {
-            hours++;
-            quarters = 0;
-          }
+          state.shifts.push({shift: `${hours}:00`, hour: hours, selected: false});
         }
+        hours++;
       }
     },
-    shiftStateSwitch(state) {
-      state.shiftState = !state.shiftState;
-      state.shiftDropDownState1 = false;
-      state.shiftDropDownState2 = false;
-      state.shiftSelect1.shift = '-- : --';
-      state.shiftSelect2.shift = '-- : --';
-      state.roomDropDownState = false;
-    },
-    shiftDropDownStateSwitch1(state) {
-      state.roomDropDownState = false;
-      state.shiftDropDownState2 = false;
-      state.shiftDropDownState1 = !state.shiftDropDownState1;
-    },
-    shiftDropDownStateSwitch2(state) {
-      state.roomDropDownState = false;
-      state.shiftDropDownState1 = false;
-      state.shiftDropDownState2 = !state.shiftDropDownState2;
-    },
-    shiftSelection1(state, index) {
-      state.shiftDropDownState1 = false;
-      state.shiftSelect1.shift = state.shifts[index].shift;
-      state.shiftSelect1.hour = state.shifts[index].hour;
-      state.shiftSelect1.quarter = state.shifts[index].quarter;
-    },
-    shiftSelection2(state, index) {
-      state.shiftDropDownState2 = false;
-      state.shiftSelect2.shift = state.shifts[index].shift;
-      state.shiftSelect2.hour = state.shifts[index].hour;
-      state.shiftSelect2.quarter = state.shifts[index].quarter;
-    },
-    roomDropDownStateSwitch(state) {
-      state.shiftDropDownState1 = false;
-      state.shiftDropDownState2 = false;
-      state.roomDropDownState = !state.roomDropDownState;
-    },
-    roomSelection(state, index) {
-      state.roomDropDownState = false;
-      state.rooms.forEach(room => {
-        room.active = false;
-      });
-      state.rooms[index].active = true;
-      state.roomSelect = state.rooms[index].name;
-    },
-    confirmReservation(state) {
-      state.rooms.forEach(room => {
-        room.active = false;
-      });
-      if(state.shiftState == false){
-        state.shiftSelect1.shift = '09:00';
-        state.shiftSelect2.shift = '17:00';
-        state.shiftSelect1.hour = 9;
-        state.shiftSelect2.hour = 17;
-        state.shiftSelect1.quarter = 0;
-        state.shiftSelect2.quarter = 0;
-      }
-
-      state.reservations.forEach(el => {
-        if(
-          state.roomSelect == el.room && state.shiftSelect1.hour == el.hour1 && state.shiftSelect1.quarter >= el.quarter1 ||
-          state.roomSelect == el.room && state.shiftSelect2.hour == el.hour2 && state.shiftSelect2.quarter >= el.quarter2
-          ) {
-
-          }
-        if(
-          state.roomSelect == el.room && state.shiftSelect1.hour >= el.hour1 && state.shiftSelect1.quarter >= el.quarter1 ||
-          state.roomSelect == el.room && state.shiftSelect1.hour < el.hour2 && state.shiftSelect1.quarter < el.quarter2 ||
-          state.roomSelect == el.room && state.shiftSelect2.hour > el.hour1 && state.shiftSelect2.quarter > el.quarter1 ||
-          state.roomSelect == el.room && state.shiftSelect2.hour <= el.hour2 && state.shiftSelect2.quarter >= el.quarter2  
-          ) {
-          state.alertState2 = true;
-        }
-      }); 
-
-      if(state.shiftSelect1.shift == '-- : --' || state.shiftSelect2.shift == '-- : --' || state.roomSelect  == 'Les Salles') {
-        state.alertState1 = true;
-      }else if(state.alertState2 == false) {
-        state.reservations.push({
-          room: state.roomSelect,
-          shift1: state.shiftSelect1.shift, 
-          shift2: state.shiftSelect2.shift, 
-          hour1: state.shiftSelect1.hour,
-          hour2: state.shiftSelect2.hour,
-          quarter1: state.shiftSelect1.quarter,
-          quarter2: state.shiftSelect2.quarter
-        });
-        state.isReservations = true;
-        state.shiftState = false;
-        state.shiftDropDownState1 = false;
-        state.shiftDropDownState2 = false;
-        state.roomDropDownState = false;
-        state.roomSelect = 'Les Salles';
-      }
-    },
-    alertCancel(state) {
-      state.alertState1 = false;
-      state.alertState2 = false;
-    },
-
     makeReserv(state, index) {
       if(state.shift1State == false) {
         state.shift1State = true;
@@ -328,6 +172,14 @@ export default new Vuex.Store({
         state.makeReservState = true;
       }else {
       }
+    },
+    makeReservCancel(state) {
+      state.shifts.forEach(el => {
+        el.selected = false;
+      })
+      state.shift1State = false;
+      state.shift2State = false;
+      state.makeReservState = false;
     }
   },
   actions: {
@@ -354,36 +206,14 @@ export default new Vuex.Store({
     reservCancel(context) {
       context.commit('reservCancel');
     },
-    shiftStateSwitch(context) {
-      context.commit('shiftStateSwitch');
+    scroll(context) {
+      context.commit('scroll');
     },
-    shiftDropDownStateSwitch1(context) {
-      context.commit('shiftDropDownStateSwitch1');
-    },
-    shiftDropDownStateSwitch2(context) {
-      context.commit('shiftDropDownStateSwitch2');
-    },
-    shiftSelection1(context, index) {
-      context.commit('shiftSelection1', index);
-    },
-    shiftSelection2(context, index) {
-      context.commit('shiftSelection2', index);
-    },
-    roomDropDownStateSwitch(context) {
-      context.commit('roomDropDownStateSwitch');
-    },
-    roomSelection(context, index) {
-      context.commit('roomSelection', index);
-    },
-    confirmReservation(context) {
-      context.commit('confirmReservation');
-    },
-    alertCancel(context) {
-      context.commit('alertCancel');
-    },
-
     makeReserv(context, index) {
       context.commit('makeReserv', index);
+    },
+    makeReservCancel(context) {
+      context.commit('makeReservCancel');
     }
   }
 })

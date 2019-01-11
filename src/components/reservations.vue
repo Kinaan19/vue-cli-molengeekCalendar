@@ -2,12 +2,13 @@
   <div id="reserv">
     <div class="row">
       <div class="col-sm-12">
+        <!-- DATE DISPLAY -->
         <div class="reservHeader text-center p-3">
           <h5>{{daySelect.w_day}}&nbsp;{{daySelect.m_day}}&nbsp;{{monthString}}&nbsp;{{year}}</h5>
         </div>
-
-        <!-- TEST -->
-        <div class="reservs">
+        <!-- STOP -->
+        <!-- RESERVATIONS -->
+        <div class="reservs" id="test">
           <div class="row" v-for="(el, index) in shifts" :key="index">
             <div class="col-sm-2 p-3 shifts">
               {{el.shift}}
@@ -17,108 +18,25 @@
             </div>
           </div>
         </div>
+        <!-- STOP -->
+        <!-- CHOOSING ROOM -->
         <div class="makeReserv" v-if="makeReservState">
           <div class="makeReservHeader text-center p-3">
             <h5>test</h5>
           </div>
-        </div>
-        <!-- STOP -->
-
-        <div class="makeReservs py-3" :class="{shiftPadding: shiftState}" hidden>
-          <div class="d-flex justify-content-between">
-            <div class="checkBox ml-4">
-              <input type="checkbox" id="cb5" class="tgl tgl-flip" v-show="false" :checked="shiftState">
-              <label data-tg-off="All Day" data-tg-on="Shift" for="cb5" class="tgl-btn" @click="shiftStateSwitch"></label>
-            </div>
-            <!-- ROOMS DROPDOWN -->
-            <div class="dropDown dropDownRooms" :class="{dropDownActive: roomDropDownState}">
-              <div class="dropDownHeader">
-                <ul>
-                  <li class="dropdownTitle" @click="roomDropDownStateSwitch">{{roomSelect}}</li>
-                </ul>
-              </div>
-              <div class="dropDownBody" v-show="roomDropDownState">
-                <ul>
-                  <li class="dropdownItems" v-for="(room, index) in rooms" :key="index" @click="roomSelection(index)" :hidden="room.active">{{room.name}}</li> 
-                </ul>
-              </div>
-             </div>
-            <!-- STOP -->
-            <!-- CONFIRM BUTTON -->
-            <div class="add mr-4">
-              <button class="btn" @click="confirmReservation">Réserver</button>
-            </div>
-            <!-- STOP -->
+          <div class="makeReservBody">
+            <button class="btn bg-transparent" v-for="(room, index) in rooms" :key="index">{{room.name}}</button>
           </div>
-          <!-- SHIFT DROPDOWN -->
-          <div class="shift d-flex px-2 my-3" v-if="shiftState">
-            <!-- FIRST SHIFT-->
-            <div class="d-flex dropDownShift1">
-              <span class="p-2">De</span>
-              <div class="dropDown" :class="{dropDownActive: shiftDropDownState1}">
-                <div class="dropDownHeader d-flex" @click="shiftDropDownStateSwitch1">
-                  <ul>
-                    <li class="dropdownTitle">{{shiftSelect1}}</li>
-                  </ul>
-                  <button class="btn bg-transparent"><i class="fas fa-angle-down"></i></button>
-                </div>
-                <transition name="fade">
-                  <div class="dropDownBody dropDownBodyShifts" v-show="shiftDropDownState1">
-                    <ul>
-                      <li class="dropdownItems" v-for="(shift, index) in shifts" :key="index" @click="shiftSelection1(index)">{{shift.shift}}</li> 
-                    </ul>
-                  </div>
-                </transition>
-              </div>
-            </div>
-            <!-- STOP -->
-            <!-- SECOND SHIFT -->
-            <div class="d-flex dropDownShift2">
-              <span class="p-2">à</span>
-              <div class="dropDown" :class="{dropDownActive: shiftDropDownState2}">
-                <div class="dropDownHeader d-flex" @click="shiftDropDownStateSwitch2">
-                  <ul>
-                    <li class="dropdownTitle">{{shiftSelect2}}</li>
-                  </ul>
-                  <button class="btn bg-transparent"><i class="fas fa-angle-down"></i></button>
-                </div>
-                <transition name="fade">
-                  <div class="dropDownBody dropDownBodyShifts" v-show="shiftDropDownState2">
-                    <ul>
-                      <li class="dropdownItems" v-for="(shift, index) in shifts" :key="index" @click="shiftSelection2(index)">{{shift.shift}}</li> 
-                    </ul>
-                  </div>
-                </transition>
-              </div>
-            </div>
-            <!-- STOP -->
-          </div>
-          <!-- STOP -->
-          <!-- CANCEL BUTTON -->
-          <div class="cancel">
-            <button class="btn bg-transparent" @click="reservCancel"><i class="fas fa-times"></i></button>
-          </div>
-          <!-- STOP -->
-        </div>
-        <!-- RESERVATIONS -->
-        <div :class="{seeReservs: isReservations}" hidden>
-          <div class="reservations" v-for="(reservation, index) in reservations" :key="index">
-            <p>{{reservation.room}} - Reservée de {{reservation.shift1}} à {{reservation.shift2}} par User</p>
-          </div>
+          <button class="btn bg-transparent" @click="makeReservCancel"><i class="fas fa-times"></i></button>
         </div>
         <!-- STOP -->
       </div>
     </div>
-    <div class="alert p-5" v-if="alertState1">
-      <h5>ERREUR !</h5>
-      <p>T'as dû mal faire un truc... Recommence !</p>
-      <button class="btn bg-transparent" @click="alertCancel"><i class="fas fa-times"></i></button>
+    <!-- CANCEL BUTTON -->
+    <div class="cancel">
+      <button class="btn bg-transparent" @click="reservCancel"><i class="fas fa-times"></i></button>
     </div>
-    <div class="alert p-5" v-if="alertState2">
-      <h5>ERREUR !</h5>
-      <p>Shift déjà réservé!</p>
-      <button class="btn bg-transparent" @click="alertCancel"><i class="fas fa-times"></i></button>
-    </div>
+    <!-- STOP -->
   </div>
 </template>
 
@@ -138,37 +56,20 @@ export default {
       'monthString',
       'daySelect',
       'weeks',
-      'shiftState',
       'shifts',
-      'shiftDropDownState1',
-      'shiftSelect1',
-      'shiftDropDownState2',
-      'shiftSelect2',
-      'roomDropDownState',
-      'roomSelect',
-      'reservations',
-      'isReservations',
-      'alertState1',
-      'alertState2',
-
       'makeReservState'
     ])
   },
   methods: {
     ...mapActions([
       'reservCancel',
-      'shiftStateSwitch',
-      'shiftDropDownStateSwitch1',
-      'shiftDropDownStateSwitch2',
-      'shiftSelection1',
-      'shiftSelection2',
-      'roomDropDownStateSwitch',
-      'roomSelection',
-      'confirmReservation',
-      'alertCancel',
-
-      'makeReserv'
+      'scroll',
+      'makeReserv',
+      'makeReservCancel'
     ])
+  },
+  mounted() {
+    this.scroll();
   }
 }
 </script>
@@ -340,7 +241,7 @@ export default {
   .cancel {
     position: absolute;
     right: 15px;
-    top: -60px;
+    top: 15px;
     i {
       color: #777;
       font-size: 18px;
@@ -392,8 +293,16 @@ export default {
     background: #fff;
     box-shadow: 0 0 0 100vh rgba(0,0,0,0.5);
     width: 300px;
+    .btn {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      i {
+        color: #777;
+        font-size: 18px;
+      }
+    }
   }
-
 }
 
 </style>

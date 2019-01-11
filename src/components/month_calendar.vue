@@ -77,7 +77,7 @@ export default {
   beforeMount() {
     this.onload();
     // this.test();
-  },
+  }
 }
 </script>
 
