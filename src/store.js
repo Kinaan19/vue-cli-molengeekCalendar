@@ -6,13 +6,13 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     rooms: [
-      {name:'Deadpool', route:'deadpool', shifts: [], active: false},
-      {name:'GTO', route:'gto', shifts: [], active: false},
-      {name:'Joker', route:'joker', shifts: [], active: false},
-      {name:'Star Wars', route:'starwars', shifts: [], active: false},
-      {name:'Meeting #1', route:'meeting_1', shifts: [], active: false},
-      {name:'Meeting #2', route:'meeting_2', shifts: [], active: false},
-      {name:'Brain Storming', route:'brainstorm', shifts: [], active: false}
+      {name:'Deadpool', reservs: [], active: false},
+      {name:'GTO', reservs: [], active: false},
+      {name:'Joker', reservs: [], active: false},
+      {name:'Star Wars', reservs: [], active: false},
+      {name:'Meeting #1', reservs: [], active: false},
+      {name:'Meeting #2', reservs: [], active: false},
+      {name:'Brain Storming', reservs: [], active: false}
     ],
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
@@ -22,6 +22,7 @@ export default new Vuex.Store({
     weekDays_fr: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
     reservationState: false,
     daySelect: {},
+    shiftsDefault: [],
     shifts: [],
     makeReservState: false,
     shift1State: false,
@@ -153,9 +154,9 @@ export default new Vuex.Store({
     reservSee(state, {indexWeek, indexDay}) {
       var week = state.weeks[indexWeek];
       if(state.reservationState == false && week[indexDay].otherMonth == false) {
-        state.reservationState = true;
         state.daySelect = week[indexDay];
         state.daySelect.w_day = state.weekDays_fr[indexDay];
+        state.reservationState = true;
       }
     },
     reservCancel(state) {
@@ -178,29 +179,35 @@ export default new Vuex.Store({
       var hours = 0;
       while(hours < 24) {
         if(hours < 10) {
-          state.shifts.push({shift: `0${hours}:00`, hour: hours, selected: false, hide: false});
-          state.rooms.forEach(el => {
-            el.shifts.push({shift: `0${hours}:00`, hour: hours, selected: false, hide: false});
-          })
+          state.shifts.push({shift: `0${hours}:00`, selected: false, hide: false});
+          state.shiftsDefault.push({shift: `0${hours}:00`, selected: false, hide: false});
         }else {
-          state.shifts.push({shift: `${hours}:00`, hour: hours, selected: false, hide: false});
-          state.rooms.forEach(el => {
-            el.shifts.push({shift: `${hours}:00`, hour: hours, selected: false, hide: false});
-          })
+          state.shifts.push({shift: `${hours}:00`, selected: false, hide: false});
+          state.shiftsDefault.push({shift: `${hours}:00`, selected: false, hide: false});
         }
         hours++;
       }
     },
     selectRoom(state, index) {
       if(state.alert1State == true) {
-
+        
       }else if(state.rooms[index].active == false) {
         state.selectRoomState = true;
         state.rooms[index].active = true;
         state.selectedRoom = state.rooms[index].name;
         state.rooms.forEach(el => {
           if(el.name == state.selectedRoom) {
-            state.shifts = el.shifts;
+            if(el.reservs.length == false) {
+              state.shifts = state.shiftsDefault;
+            }else {
+              el.reservs.forEach(el => {
+                if(el.day == state.daySelect.m_day && el.month == state.month && el.year == state.year) {
+                  state.shifts = el.shifts;
+                }else {
+                  state.shifts = state.shiftsDefault;
+                }
+              })
+            }
           }
           if(el.name != state.selectedRoom) {
             el.active = false;
@@ -242,7 +249,7 @@ export default new Vuex.Store({
           var shiftY = state.shifts[index].shift;
           state.shift2 = state.shifts[index].shift;
           var indexY = index;
-          state.index2 = index;
+          state.index2 = index; 
           if(state.index1 < state.index2) {
             for (let i = state.index1; i <= state.index2; i++) {
               if(state.shifts[i].reserved == true) {
@@ -285,12 +292,37 @@ export default new Vuex.Store({
       }
     },
     confirmReserv(state) {
-      for (let i = state.index1; i <= state.index2; i++) {
-        state.shifts[i].hide = true;
-      }
       state.rooms.forEach(el => {
-        if(el.name == state.selectedRoom) {
-          el.shifts.splice(state.index1, 0, {shift: `de ${state.shift1} à ${state.shift2}`, selected: false, hide: false, reserved: true})
+        if(el.name == state.selectedRoom && el.reservs.length == false) {
+          el.reservs.push({shifts: [], day: state.daySelect.m_day, month: state.month, year: state.year});
+          el.reservs.forEach(el => {
+            if(el.day == state.daySelect.m_day && el.month == state.month && el.year == state.year) {
+              var hours = 0;
+              while(hours < 24) {
+                if(hours < 10) {
+                  el.shifts.push({shift: `0${hours}:00`, selected: false, hide: false});
+                }else {
+                  el.shifts.push({shift: `${hours}:00`, selected: false, hide: false});
+                }
+                hours++;
+              }
+              for (let i = state.index1; i <= state.index2; i++) {
+                el.shifts[i].hide = true;
+              }
+              el.shifts.splice(state.index1, 0, {shift: `de ${state.shift1} à ${state.shift2}`, selected: false, hide: false, reserved: true});
+              state.shifts = el.shifts;
+            }
+          })
+        }else if(el.name == state.selectedRoom) {
+          el.reservs.forEach(el => {
+            if(el.day == state.daySelect.m_day && el.month == state.month && el.year == state.year) {
+              for (let i = state.index1; i <= state.index2; i++) {
+                el.shifts[i].hide = true;
+              }
+              el.shifts.splice(state.index1, 0, {shift: `de ${state.shift1} à ${state.shift2}`, selected: false, hide: false, reserved: true});
+              state.shifts = el.shifts;
+            }
+          })
         }
       })
     },

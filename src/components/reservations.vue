@@ -60,7 +60,7 @@ import {mapGetters, mapActions} from 'vuex'
 export default {
   data() {
     return {
-
+      refreshVar: false
     }
   },
   computed: {
@@ -88,7 +88,13 @@ export default {
       'confirmReserv',
       'confirmReservCancel',
       'cancelAlert'
-    ])
+    ]),
+    refresh(index) {
+      this.selectRoom(index);
+      setTimeout(() => {
+        // this.refreshVar = !this.refreshVar
+      }, 100);
+    }
   }
 }
 </script>
@@ -98,7 +104,7 @@ export default {
 #reserv {
   position: relative;
   width: 60vw;
-  height: 72vh;
+  height: 70vh;
   box-shadow: 0 0 0 100vh rgba(0,0,0,0.5);
   background-color: #fff;
   .reservHeader {
@@ -126,7 +132,7 @@ export default {
   }
   .reservs {
     overflow-y: auto;
-    height: 58vh;
+    height: 56vh;
     .row {
       margin: auto;
       border-bottom: 1px solid #bbb;
