@@ -78,6 +78,10 @@ export default {
  
 #month {
   position: relative;
+  margin: 50px auto;
+  padding: 0;
+  background-color: #fff;
+  height: 100vh;
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s;
   }
@@ -97,10 +101,6 @@ export default {
   .btn:focus i {
     font-size: 50px;
   } 
-  margin: 50px auto;
-  padding: 0;
-  background-color: #fff;
-  height: 100vh;
   .month_header {
     box-shadow: 0 3px 20px rgba(0, 0, 0, 0.2);
     position: relative;

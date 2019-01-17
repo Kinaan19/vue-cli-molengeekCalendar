@@ -31,7 +31,8 @@ export default new Vuex.Store({
     index1: 0,
     index2: 0,
     selectedRoom: "",
-    selectRoomState: false
+    selectRoomState: false,
+    alert1State: false
   },
   getters: {
     rooms(state) {
@@ -78,6 +79,9 @@ export default new Vuex.Store({
     },
     selectRoomState(state) {
       return state.selectRoomState;
+    },
+    alert1State(state) {
+      return state.alert1State;
     }
   },
   mutations: {
@@ -162,10 +166,12 @@ export default new Vuex.Store({
         room.active = false;
       });
     },
-    scroll() {
+    scroll(state) {
       var myScroll = document.getElementsByClassName('reservs');
       setTimeout(() => {
-        myScroll[0].scrollTop = 515;
+        if(state.selectRoomState == true) {
+          myScroll[0].scrollTop = 515;
+        }
       }, 1);
     },
     shifts(state) {
@@ -186,7 +192,9 @@ export default new Vuex.Store({
       }
     },
     selectRoom(state, index) {
-      if(state.rooms[index].active == false) {
+      if(state.alert1State == true) {
+
+      }else if(state.rooms[index].active == false) {
         state.selectRoomState = true;
         state.rooms[index].active = true;
         state.selectedRoom = state.rooms[index].name;
@@ -213,9 +221,11 @@ export default new Vuex.Store({
       }
     },
     selectShifts(state, index) {
-      if(state.shift1State == false) {
+      if(state.alert1State == true) {
+
+      }else if(state.shift1State == false) {
         if(state.shifts[index].reserved == true){
-          alert('tagueule !');
+          state.alert1State = true;
         }else {
           state.shift1State = true;
           state.shifts[index].selected = true;
@@ -236,9 +246,12 @@ export default new Vuex.Store({
           if(state.index1 < state.index2) {
             for (let i = state.index1; i <= state.index2; i++) {
               if(state.shifts[i].reserved == true) {
+                state.shifts.forEach(el => {
+                  el.selected = false;
+                })
+                state.shift1State = false;
                 state.shift2State = false;
-                state.shifts[index].selected = false;
-                alert('tagueule');
+                state.alert1State = true;
                 break;
               }else {
                 state.shifts[i].selected = true;
@@ -251,9 +264,12 @@ export default new Vuex.Store({
             state.shift1 = shiftY;
             for (let i = state.index1; i <= state.index2; i++ ) {
               if(state.shifts[i].reserved == true) {
+                state.shifts.forEach(el => {
+                  el.selected = false;
+                })
+                state.shift1State = false;
                 state.shift2State = false;
-                state.shifts[index].selected = false;
-                alert('tagueule');
+                state.alert1State = true;
                 break;
               }else {
                 state.shifts[i].selected = true;
@@ -285,6 +301,9 @@ export default new Vuex.Store({
       state.shift1State = false;
       state.shift2State = false;
       state.makeReservState = false;
+    },
+    cancelAlert(state) {
+      state.alert1State = false;
     }
   },
   actions: {
@@ -324,6 +343,9 @@ export default new Vuex.Store({
     confirmReserv(context) {
       context.commit('confirmReserv');
       context.commit('confirmReservCancel');
+    },
+    cancelAlert(context) {
+      context.commit('cancelAlert');
     }
   }
 })

@@ -45,6 +45,12 @@
       <button class="btn bg-transparent" @click="reservCancel"><i class="fas fa-times"></i></button>
     </div>
     <!-- STOP -->
+    <!-- ALERT 1 -->
+    <div class="alert" v-if="alert1State">
+      <h5 class="p-4 text-center">Oups! C'est déjà réservé.</h5>
+      <button class="btn bg-transparent" @click="cancelAlert"><i class="fas fa-times"></i></button>
+    </div>
+    <!-- STOP -->
   </div>  
 </template>
 
@@ -69,7 +75,8 @@ export default {
       'shift2',
       'selectRoomState',
       'selectedRoom',
-      'makeReservState'
+      'makeReservState',
+      'alert1State'
     ])
   },
   methods: {
@@ -79,11 +86,9 @@ export default {
       'selectShifts',
       'selectRoom',
       'confirmReserv',
-      'confirmReservCancel'
+      'confirmReservCancel',
+      'cancelAlert'
     ])
-  },
-  mounted() {
-    // this.scroll();
   }
 }
 </script>
@@ -147,9 +152,6 @@ export default {
     .makeReservHeader {
       box-shadow: 0 3px 20px rgba(0, 0, 0, 0.2);
     }
-    .makeReservBody {
-      
-    }
   }
   .cancel {
     position: absolute;
@@ -157,6 +159,23 @@ export default {
     top: 15px;
     i {
       color: #777;
+      font-size: 18px;
+    }
+  }
+  .alert {
+    position: absolute;
+    top: 30vh;
+    left: 20vw;
+    width: 20vw;
+    background: #E52528;
+    color: #eee;
+    .btn {
+      position: absolute;
+      right: 3px;
+      top: 3px;
+    }
+    i {
+      color: #eee;
       font-size: 18px;
     }
   }
