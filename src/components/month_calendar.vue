@@ -67,16 +67,9 @@ export default {
       'nextMonth',
       'reservSee'
     ]),
-
-    test() {
-      // console.log(this.monthDays);
-      // console.log(this.weeks); 
-      console.log(this.weeks);
-    }
   },
   beforeMount() {
     this.onload();
-    // this.test();
   }
 }
 </script>
@@ -86,7 +79,7 @@ export default {
 #month {
   position: relative;
   .fade-enter-active, .fade-leave-active {
-    transition: opacity 1s;
+    transition: opacity .5s;
   }
   .fade-enter, .fade-leave-to {
     opacity: 0;

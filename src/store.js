@@ -6,13 +6,13 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     rooms: [
-      {name:'Deadpool', route:'deadpool', active: false},
-      {name:'GTO', route:'gto', active: false},
-      {name:'Joker', route:'joker', active: false},
-      {name:'Star Wars', route:'starwars', active: false},
-      {name:'Meeting #1', route:'meeting_1', active: false},
-      {name:'Meeting #2', route:'meeting_2', active: false},
-      {name:'Brain Storming', route:'brainstorm', active: false}
+      {name:'Deadpool', route:'deadpool', shifts: [], active: false},
+      {name:'GTO', route:'gto', shifts: [], active: false},
+      {name:'Joker', route:'joker', shifts: [], active: false},
+      {name:'Star Wars', route:'starwars', shifts: [], active: false},
+      {name:'Meeting #1', route:'meeting_1', shifts: [], active: false},
+      {name:'Meeting #2', route:'meeting_2', shifts: [], active: false},
+      {name:'Brain Storming', route:'brainstorm', shifts: [], active: false}
     ],
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
@@ -25,7 +25,13 @@ export default new Vuex.Store({
     shifts: [],
     makeReservState: false,
     shift1State: false,
-    shift2State: false
+    shift2State: false,
+    shift1: "",
+    shift2: "",
+    index1: 0,
+    index2: 0,
+    selectedRoom: "",
+    selectRoomState: false
   },
   getters: {
     rooms(state) {
@@ -60,6 +66,18 @@ export default new Vuex.Store({
     },
     shift2State(state) {
       return state.shift2State;
+    },
+    shift1(state) {
+      return state.shift1;
+    },
+    shift2(state) {
+      return state.shift2;
+    },
+    selectedRoom(state) {
+      return state.selectedRoom;
+    },
+    selectRoomState(state) {
+      return state.selectRoomState;
     }
   },
   mutations: {
@@ -138,42 +156,129 @@ export default new Vuex.Store({
     },
     reservCancel(state) {
       state.reservationState = false;
-      state.roomSelect = 'Les Salles';
-      state.roomDropDownState = false;
+      state.selectRoomState = false;
+      state.roomSelect = "";
       state.rooms.forEach(room => {
         room.active = false;
       });
-      state.shiftState = false;
-      state.shiftDropDownState1 = false;
-      state.shiftDropDownState2 = false;
     },
     scroll() {
-      var myScroll = document.getElementById('test');
-      myScroll.scrollTop = 515;
+      var myScroll = document.getElementsByClassName('reservs');
+      setTimeout(() => {
+        myScroll[0].scrollTop = 515;
+      }, 1);
     },
     shifts(state) {
       var hours = 0;
       while(hours < 24) {
         if(hours < 10) {
-          state.shifts.push({shift: `0${hours}:00`, hour: hours, selected: false});
+          state.shifts.push({shift: `0${hours}:00`, hour: hours, selected: false, hide: false});
+          state.rooms.forEach(el => {
+            el.shifts.push({shift: `0${hours}:00`, hour: hours, selected: false, hide: false});
+          })
         }else {
-          state.shifts.push({shift: `${hours}:00`, hour: hours, selected: false});
+          state.shifts.push({shift: `${hours}:00`, hour: hours, selected: false, hide: false});
+          state.rooms.forEach(el => {
+            el.shifts.push({shift: `${hours}:00`, hour: hours, selected: false, hide: false});
+          })
         }
         hours++;
       }
     },
-    makeReserv(state, index) {
-      if(state.shift1State == false) {
-        state.shift1State = true;
-        state.shifts[index].selected = true;
-      }else if(state.shift1State == true && state.shift2State == false) {
-        state.shift2State = true;
-        state.shifts[index].selected = true;
-        state.makeReservState = true;
+    selectRoom(state, index) {
+      if(state.rooms[index].active == false) {
+        state.selectRoomState = true;
+        state.rooms[index].active = true;
+        state.selectedRoom = state.rooms[index].name;
+        state.rooms.forEach(el => {
+          if(el.name == state.selectedRoom) {
+            state.shifts = el.shifts;
+          }
+          if(el.name != state.selectedRoom) {
+            el.active = false;
+          }
+        })
       }else {
+        state.selectRoomState = false;
+        state.rooms[index].active = false;
+        state.selectedRoom = "";
+        state.shifts.forEach(el => {
+          el.selected = false;
+        })
+      }
+      if(state.selectedRoom != "" && state.shift1State == true && state.shift2State == true) {
+        setTimeout(() => {   
+          state.makeReservState = true;
+        }, 500);
       }
     },
-    makeReservCancel(state) {
+    selectShifts(state, index) {
+      if(state.shift1State == false) {
+        if(state.shifts[index].reserved == true){
+          alert('tagueule !');
+        }else {
+          state.shift1State = true;
+          state.shifts[index].selected = true;
+          state.shift1 = state.shifts[index].shift;
+          state.index1 = index;
+        }
+      }else if(state.shift1State == true && state.shift2State == false) {
+        if(state.shifts[index].selected == true) {
+          state.shifts[index].selected = false;
+          state.shift1State = false;
+        }else {
+          state.shift2State = true;
+          state.shifts[index].selected = true;
+          var shiftY = state.shifts[index].shift;
+          state.shift2 = state.shifts[index].shift;
+          var indexY = index;
+          state.index2 = index;
+          if(state.index1 < state.index2) {
+            for (let i = state.index1; i <= state.index2; i++) {
+              if(state.shifts[i].reserved == true) {
+                state.shift2State = false;
+                state.shifts[index].selected = false;
+                alert('tagueule');
+                break;
+              }else {
+                state.shifts[i].selected = true;
+              }
+            }
+          }else {
+            state.index2 = state.index1;
+            state.index1 = indexY; 
+            state.shift2 = state.shift1;
+            state.shift1 = shiftY;
+            for (let i = state.index1; i <= state.index2; i++ ) {
+              if(state.shifts[i].reserved == true) {
+                state.shift2State = false;
+                state.shifts[index].selected = false;
+                alert('tagueule');
+                break;
+              }else {
+                state.shifts[i].selected = true;
+              }
+            }
+          }
+        }
+      }
+      if(state.selectedRoom != "" && state.shift1State == true && state.shift2State == true) {
+        setTimeout(() => {   
+          state.makeReservState = true;
+        }, 500);
+      }
+    },
+    confirmReserv(state) {
+      for (let i = state.index1; i <= state.index2; i++) {
+        state.shifts[i].hide = true;
+      }
+      state.rooms.forEach(el => {
+        if(el.name == state.selectedRoom) {
+          el.shifts.splice(state.index1, 0, {shift: `de ${state.shift1} à ${state.shift2}`, selected: false, hide: false, reserved: true})
+        }
+      })
+    },
+    confirmReservCancel(state) {
       state.shifts.forEach(el => {
         el.selected = false;
       })
@@ -206,14 +311,19 @@ export default new Vuex.Store({
     reservCancel(context) {
       context.commit('reservCancel');
     },
-    scroll(context) {
+    selectShifts(context, index) {
+      context.commit('selectShifts', index);
+    },
+    selectRoom(context, index) {
+      context.commit('selectRoom', index);
       context.commit('scroll');
     },
-    makeReserv(context, index) {
-      context.commit('makeReserv', index);
+    confirmReservCancel(context) {
+      context.commit('confirmReservCancel');
     },
-    makeReservCancel(context) {
-      context.commit('makeReservCancel');
+    confirmReserv(context) {
+      context.commit('confirmReserv');
+      context.commit('confirmReservCancel');
     }
   }
 })
